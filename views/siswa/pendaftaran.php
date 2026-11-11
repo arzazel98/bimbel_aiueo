@@ -119,11 +119,11 @@ require_once '../layout/header.php';
         <?php foreach($kelas_sudah as $ks): ?>
             <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
                 <div>
-                    <strong><?= htmlspecialchars($ks['mata_pelajaran']) ?></strong>
-                    <div class="small text-muted"><?= htmlspecialchars($ks['nama_kelas']) ?></div>
+                    <strong><?= htmlspecialchars($ks['mata_pelajaran'] ?? '') ?></strong>
+                    <div class="small text-muted"><?= htmlspecialchars($ks['nama_kelas'] ?? '') ?></div>
                 </div>
-                <span class="badge <?= $ks['status_pendaftaran'] == 'disetujui' ? 'bg-success' : 'bg-warning' ?> rounded-pill">
-                    <?= $ks['status_pendaftaran'] == 'disetujui' ? 'Aktif' : 'Menunggu Verifikasi' ?>
+                <span class="badge <?= ($ks['status_pendaftaran'] ?? '') == 'disetujui' ? 'bg-success' : 'bg-warning' ?> rounded-pill">
+                    <?= ($ks['status_pendaftaran'] ?? '') == 'disetujui' ? 'Aktif' : 'Menunggu Verifikasi' ?>
                 </span>
             </div>
         <?php endforeach; ?>
@@ -144,24 +144,33 @@ require_once '../layout/header.php';
                 <p class="text-muted small">Anda sudah mendaftar semua kelas atau kuota sudah penuh.</p>
             </div>
         <?php else: ?>
-            <?php foreach($kelas_list as $k): ?>
-            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                <div>
-                    <strong><?= htmlspecialchars($k['mata_pelajaran']) ?></strong>
-                    <div class="small text-muted"><?= htmlspecialchars($k['nama_kelas']) ?></div>
-                    <div class="small text-muted mt-1">
-                        <span class="badge bg-primary rounded-pill">Kuota: <?= $k['terdaftar'] ?>/<?= $k['kuota'] ?></span>
-                        <span class="badge bg-success rounded-pill">Rp <?= number_format($k['harga_per_bulan'], 0, ',', '.') ?>/bulan</span>
+            <div class="row g-3">
+                <?php foreach($kelas_list as $k): ?>
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="card border rounded-4 shadow-sm h-100 p-3 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="fw-bold text-dark mb-0"><?= htmlspecialchars($k['nama_kelas'] ?? '') ?></h6>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill"><?= htmlspecialchars($k['mata_pelajaran'] ?? '') ?></span>
+                            </div>
+                            <p class="small text-muted mb-3"><?= htmlspecialchars($k['deskripsi'] ?? 'Kelas bimbingan belajar intensif & interaktif.') ?></p>
+                        </div>
+                        <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted d-block" style="font-size: 11px;">Kuota: <?= $k['terdaftar'] ?? 0 ?>/<?= $k['kuota'] ?? 0 ?></small>
+                                <strong class="text-success">Rp <?= number_format($k['harga_per_bulan'] ?? 0, 0, ',', '.') ?></strong>
+                            </div>
+                            <form method="POST" onsubmit="return confirm('Yakin ingin mendaftar kelas <?= htmlspecialchars($k['nama_kelas'] ?? '') ?>?')">
+                                <input type="hidden" name="kelas_id" value="<?= $k['id'] ?>">
+                                <button type="submit" class="btn btn-primary rounded-pill btn-sm px-3">
+                                    <i class="fas fa-plus me-1"></i> Daftar
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-                <form method="POST" onsubmit="return confirm('Yakin ingin mendaftar kelas <?= htmlspecialchars($k['nama_kelas']) ?>?')">
-                    <input type="hidden" name="kelas_id" value="<?= $k['id'] ?>">
-                    <button type="submit" class="btn btn-primary rounded-pill btn-sm">
-                        <i class="fas fa-plus"></i> Daftar
-                    </button>
-                </form>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
         <?php endif; ?>
     </div>
 </div>

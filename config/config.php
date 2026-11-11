@@ -7,8 +7,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-define('BASE_URL', 'http://localhost/bimbel-aiueo/');
-define('APP_NAME', 'Bimbel AIUEO');
+if (!defined('BASE_URL')) {
+    define('BASE_URL', 'http://localhost/bimbel_aiueo/');
+}
+
+if (!defined('APP_NAME')) {
+    define('APP_NAME', 'Bimbel AIUEO');
+}
 
 // Helper functions
 function isLoggedIn() {
@@ -30,10 +35,10 @@ function redirect($url) {
 
 function checkRole($allowedRoles = []) {
     if (!isLoggedIn()) {
-        redirect('views/auth/login.php');
+        redirect(BASE_URL . 'views/auth/login.php');
     }
     if (!empty($allowedRoles) && !in_array(getCurrentRole(), $allowedRoles)) {
-        redirect('../index.php');
+        redirect(BASE_URL . 'index.php');
     }
 }
 ?>

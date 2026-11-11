@@ -37,55 +37,55 @@ require_once '../layout/header.php';
     <p class="text-muted small">Selamat datang di dashboard Bimbel AIUEO</p>
 </div>
 
-<!-- Statistik Cards - UKURAN SAMA PERSIS -->
+<!-- Statistik Cards -->
 <div class="row g-3 mb-4">
     <!-- Card 1: Total Siswa -->
-    <div class="col-6">
-        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100px;">
-            <div class="card-body d-flex flex-column justify-content-between p-3">
-                <small class="text-white opacity-75" style="font-size: 11px;">Total Siswa</small>
-                <div class="d-flex justify-content-between align-items-end mt-2">
-                    <h2 class="mb-0 fw-bold text-white" style="font-size: 32px; line-height: 1;"><?= $stats['siswa'] ?></h2>
-                    <i class="fas fa-users text-white opacity-50" style="font-size: 28px;"></i>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+                <small class="opacity-75 fw-semibold" style="font-size: 12px;">Total Siswa</small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 32px; line-height: 1;"><?= $stats['siswa'] ?></h2>
+                    <i class="fas fa-users opacity-50 fs-2"></i>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Card 2: Total Guru -->
-    <div class="col-6">
-        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100px;">
-            <div class="card-body d-flex flex-column justify-content-between p-3">
-                <small class="text-white opacity-75" style="font-size: 11px;">Total Guru</small>
-                <div class="d-flex justify-content-between align-items-end mt-2">
-                    <h2 class="mb-0 fw-bold text-white" style="font-size: 32px; line-height: 1;"><?= $stats['guru'] ?></h2>
-                    <i class="fas fa-chalkboard-user text-white opacity-50" style="font-size: 28px;"></i>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+                <small class="opacity-75 fw-semibold" style="font-size: 12px;">Total Guru</small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 32px; line-height: 1;"><?= $stats['guru'] ?></h2>
+                    <i class="fas fa-chalkboard-user opacity-50 fs-2"></i>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Card 3: Total Kelas -->
-    <div class="col-6">
-        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); min-height: 100px;">
-            <div class="card-body d-flex flex-column justify-content-between p-3">
-                <small class="text-white opacity-75" style="font-size: 11px;">Total Kelas</small>
-                <div class="d-flex justify-content-between align-items-end mt-2">
-                    <h2 class="mb-0 fw-bold text-white" style="font-size: 32px; line-height: 1;"><?= $stats['kelas'] ?></h2>
-                    <i class="fas fa-book-open text-white opacity-50" style="font-size: 28px;"></i>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+                <small class="opacity-75 fw-semibold" style="font-size: 12px;">Total Kelas</small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 32px; line-height: 1;"><?= $stats['kelas'] ?></h2>
+                    <i class="fas fa-book-open opacity-50 fs-2"></i>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Card 4: Pendapatan -->
-    <div class="col-6">
-        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); min-height: 100px;">
-            <div class="card-body d-flex flex-column justify-content-between p-3">
-                <small class="text-white opacity-75" style="font-size: 11px;">Pendapatan</small>
-                <div class="d-flex justify-content-between align-items-end mt-2">
-                    <h5 class="mb-0 fw-bold text-white" style="font-size: 14px; line-height: 1.2;">Rp <?= number_format($stats['pendapatan'], 0, ',', '.') ?></h5>
-                    <i class="fas fa-money-bill-wave text-white opacity-50" style="font-size: 28px;"></i>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+                <small class="opacity-75 fw-semibold" style="font-size: 12px;">Pendapatan Bulan Ini</small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <h5 class="mb-0 fw-bold" style="font-size: 20px; line-height: 1.2;">Rp <?= number_format($stats['pendapatan'], 0, ',', '.') ?></h5>
+                    <i class="fas fa-money-bill-wave opacity-50 fs-2"></i>
                 </div>
             </div>
         </div>
@@ -99,51 +99,51 @@ require_once '../layout/header.php';
     </div>
     <div class="card-body">
         <div class="row g-3">
-            <div class="col-4">
+            <div class="col-6 col-sm-4 col-md-2">
                 <a href="kelas.php" class="text-decoration-none">
-                    <div class="text-center p-3 rounded-3 bg-light">
-                        <i class="fas fa-chalkboard fs-4 text-primary"></i>
-                        <div class="small fw-bold mt-1">Kelas</div>
+                    <div class="text-center p-3 rounded-3 bg-light h-100 d-flex flex-column justify-content-center align-items-center">
+                        <i class="fas fa-chalkboard fs-3 text-primary mb-2"></i>
+                        <div class="small fw-bold text-dark">Data Kelas</div>
                     </div>
                 </a>
             </div>
-            <div class="col-4">
+            <div class="col-6 col-sm-4 col-md-2">
                 <a href="jadwal.php" class="text-decoration-none">
-                    <div class="text-center p-3 rounded-3 bg-light">
-                        <i class="fas fa-calendar-alt fs-4 text-success"></i>
-                        <div class="small fw-bold mt-1">Jadwal</div>
+                    <div class="text-center p-3 rounded-3 bg-light h-100 d-flex flex-column justify-content-center align-items-center">
+                        <i class="fas fa-calendar-alt fs-3 text-success mb-2"></i>
+                        <div class="small fw-bold text-dark">Jadwal Belajar</div>
                     </div>
                 </a>
             </div>
-            <div class="col-4">
+            <div class="col-6 col-sm-4 col-md-2">
                 <a href="presensi_monitoring.php" class="text-decoration-none">
-                    <div class="text-center p-3 rounded-3 bg-light">
-                        <i class="fas fa-fingerprint fs-4 text-warning"></i>
-                        <div class="small fw-bold mt-1">Presensi</div>
+                    <div class="text-center p-3 rounded-3 bg-light h-100 d-flex flex-column justify-content-center align-items-center">
+                        <i class="fas fa-fingerprint fs-3 text-warning mb-2"></i>
+                        <div class="small fw-bold text-dark">Monitoring Presensi</div>
                     </div>
                 </a>
             </div>
-            <div class="col-4">
+            <div class="col-6 col-sm-4 col-md-2">
                 <a href="pembayaran.php" class="text-decoration-none">
-                    <div class="text-center p-3 rounded-3 bg-light">
-                        <i class="fas fa-credit-card fs-4 text-info"></i>
-                        <div class="small fw-bold mt-1">Bayar</div>
+                    <div class="text-center p-3 rounded-3 bg-light h-100 d-flex flex-column justify-content-center align-items-center">
+                        <i class="fas fa-credit-card fs-3 text-info mb-2"></i>
+                        <div class="small fw-bold text-dark">Verifikasi Bayar</div>
                     </div>
                 </a>
             </div>
-            <div class="col-4">
+            <div class="col-6 col-sm-4 col-md-2">
                 <a href="laporan.php" class="text-decoration-none">
-                    <div class="text-center p-3 rounded-3 bg-light">
-                        <i class="fas fa-file-alt fs-4 text-danger"></i>
-                        <div class="small fw-bold mt-1">Laporan</div>
+                    <div class="text-center p-3 rounded-3 bg-light h-100 d-flex flex-column justify-content-center align-items-center">
+                        <i class="fas fa-file-alt fs-3 text-danger mb-2"></i>
+                        <div class="small fw-bold text-dark">Laporan & Rekap</div>
                     </div>
                 </a>
             </div>
-            <div class="col-4">
+            <div class="col-6 col-sm-4 col-md-2">
                 <a href="gaji_guru.php" class="text-decoration-none">
-                    <div class="text-center p-3 rounded-3 bg-light">
-                        <i class="fas fa-money-bill fs-4 text-purple" style="color: #9b59b6;"></i>
-                        <div class="small fw-bold mt-1">Gaji</div>
+                    <div class="text-center p-3 rounded-3 bg-light h-100 d-flex flex-column justify-content-center align-items-center">
+                        <i class="fas fa-wallet fs-3 text-purple mb-2" style="color: #9b59b6;"></i>
+                        <div class="small fw-bold text-dark">Honor & Gaji Guru</div>
                     </div>
                 </a>
             </div>

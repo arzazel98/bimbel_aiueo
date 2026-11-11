@@ -10,7 +10,7 @@ $user_id = $_SESSION['user_id'];
 // Get student data
 $stmt = $db->prepare("SELECT * FROM users WHERE id = :id");
 $stmt->execute(['id' => $user_id]);
-$siswa = $stmt->fetch(PDO::FETCH_ASSOC);
+$siswa = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['nama_lengkap' => $_SESSION['user'] ?? 'Siswa', 'status' => 'aktif'];
 
 // Get registered classes
 $kelas_terdaftar = $db->prepare("SELECT p.*, k.nama_kelas, k.mata_pelajaran, k.harga_per_bulan,
@@ -40,8 +40,8 @@ $today_id = $hari_map[$today] ?? 'Senin';
 $jadwal_hari = $db->prepare("SELECT j.*, k.nama_kelas, k.mata_pelajaran, u.nama_lengkap as guru_name
                              FROM jadwal j 
                              JOIN kelas k ON j.kelas_id = k.id 
-                             JOIN guru_kelas gk ON gk.kelas_id = k.id
-                             JOIN users u ON u.id = gk.guru_id
+                             LEFT JOIN guru_kelas gk ON gk.kelas_id = k.id
+                             LEFT JOIN users u ON u.id = gk.guru_id
                              WHERE j.hari = :hari AND k.id IN (
                                  SELECT kelas_id FROM pendaftaran WHERE siswa_id = :siswa_id AND status_pendaftaran = 'disetujui'
                              )
@@ -62,164 +62,180 @@ $total_tagihan = array_sum(array_column($tagihan_list, 'harga_per_bulan'));
 require_once '../layout/header.php';
 ?>
 
-<style>
-    /* Pasang pondasi Flexbox pada pembungkus HP (entah itu .phone atau .mobile-frame) */
-    .phone, .mobile-frame, body > div.container-fluid {
-        height: 740px !important;
-        max-height: 740px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        overflow: hidden !important;
-        position: relative !important;
-    }
+<div class="mb-4">
+    <h4 class="fw-bold mb-1">Halo, <?= htmlspecialchars($siswa['nama_lengkap'] ?? 'Siswa') ?>! 👋</h4>
+    <p class="text-muted small">Selamat datang di Portal Siswa Bimbel AIUEO</p>
+</div>
 
-    /* Paksa area konten ini mengambil semua sisa ruang yang ada, KECUALI jatah menu bawah */
-    .app-body-wrapper {
-        flex: 1 !important;
-        overflow-y: auto !important; /* Hanya bagian ini yang boleh nge-scroll */
-        padding: 15px 5px 20px 5px !important;
-    }
-
-    /* Sembunyikan scrollbar bawaan browser agar mirip aplikasi native hp */
-    .app-body-wrapper::-webkit-scrollbar {
-        width: 4px;
-    }
-    .app-body-wrapper::-webkit-scrollbar-thumb {
-        background: rgba(0,0,0,0.1);
-        border-radius: 10px;
-    }
-
-    /* Trik jitu: Tangkap elemen footer/menu bawaan dari layout/footer.php dan kunci mati di paling bawah */
-    footer, nav, .navbar, .bottom-nav, [class*="footer"], [class*="nav"] {
-        position: absolute !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        z-index: 9999 !important;
-        background-color: #ffffff !important; /* Beri background putih biar konten di belakangnya ga nerawang */
-        box-shadow: 0 -4px 10px rgba(0,0,0,0.08) !important; /* Efek bayangan halus di atas menu */
-    }
-</style>
-
-<div class="app-body-wrapper">
-
-    <div class="mb-4">
-        <h4 class="fw-bold">Halo, <?= htmlspecialchars($siswa['nama_lengkap']) ?>!</h4>
-        <p class="text-muted small">Dashboard Siswa Bimbel AIUEO</p>
-    </div>
-
-    <div class="row g-3 mb-4">
-        <div class="col-6">
-            <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100px;">
-                <div class="card-body d-flex flex-column justify-content-between p-3">
-                    <small class="text-white opacity-75" style="font-size: 11px;">Kelas Diikuti</small>
-                    <div class="d-flex justify-content-between align-items-end mt-2">
-                        <h2 class="mb-0 fw-bold text-white" style="font-size: 32px;"><?= count($kelas_list) ?></h2>
-                        <i class="fas fa-book-open text-white opacity-50" style="font-size: 28px;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100px;">
-                <div class="card-body d-flex flex-column justify-content-between p-3">
-                    <small class="text-white opacity-75" style="font-size: 11px;">Tagihan</small>
-                    <div class="d-flex justify-content-between align-items-end mt-2">
-                        <h5 class="mb-0 fw-bold text-white" style="font-size: 14px;">Rp <?= number_format($total_tagihan, 0, ',', '.') ?></h5>
-                        <i class="fas fa-credit-card text-white opacity-50" style="font-size: 28px;"></i>
-                    </div>
+<!-- Stats Overview -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+                <small class="opacity-75 fw-semibold" style="font-size: 12px;">Kelas Diikuti</small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 32px;"><?= count($kelas_list) ?></h2>
+                    <i class="fas fa-book-open opacity-50 fs-2"></i>
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+                <small class="opacity-75 fw-semibold" style="font-size: 12px;">Total Tagihan Aktif</small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <h5 class="mb-0 fw-bold" style="font-size: 20px;">Rp <?= number_format($total_tagihan, 0, ',', '.') ?></h5>
+                    <i class="fas fa-credit-card opacity-50 fs-2"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+                <small class="opacity-75 fw-semibold" style="font-size: 12px;">Jadwal Hari Ini</small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 32px;"><?= count($jadwal_list) ?></h2>
+                    <i class="fas fa-calendar-check opacity-50 fs-2"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+                <small class="opacity-75 fw-semibold" style="font-size: 12px;">Status Akun</small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <h5 class="mb-0 fw-bold" style="font-size: 20px;"><?= ucfirst($siswa['status'] ?? 'Aktif') ?></h5>
+                    <i class="fas fa-user-check opacity-50 fs-2"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <?php if(!empty($pending_list)): ?>
-    <div class="card border-0 rounded-4 shadow-sm mb-4 bg-warning bg-opacity-10">
-        <div class="card-body p-3">
-            <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-clock text-warning fs-5"></i>
+<?php if(!empty($pending_list)): ?>
+<div class="card border-0 rounded-4 shadow-sm mb-4 bg-warning bg-opacity-10 border-warning border-opacity-25">
+    <div class="card-body p-3">
+        <div class="d-flex align-items-center gap-3">
+            <i class="fas fa-clock text-warning fs-3"></i>
+            <div>
+                <strong class="d-block text-dark">Pendaftaran Menunggu Konfirmasi</strong>
+                <p class="small text-muted mb-0">Anda memiliki <?= count($pending_list) ?> pendaftaran kelas yang sedang diproses dan diverifikasi oleh admin.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if(!empty($tagihan_list)): ?>
+<div class="card border-0 rounded-4 shadow-sm mb-4 bg-danger bg-opacity-10 border-danger border-opacity-25">
+    <div class="card-body p-3">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fas fa-money-bill-wave text-danger fs-3"></i>
                 <div>
-                    <strong class="small">Pendaftaran Menunggu Konfirmasi</strong>
-                    <p class="small text-muted mb-0">Anda memiliki <?= count($pending_list) ?> pendaftaran yang sedang diproses admin.</p>
+                    <strong class="d-block text-dark">Ada Tagihan Belum Dibayar</strong>
+                    <p class="small text-muted mb-0">Total tagihan Anda sebesar <strong>Rp <?= number_format($total_tagihan, 0, ',', '.') ?></strong>.</p>
                 </div>
+            </div>
+            <a href="pembayaran.php" class="btn btn-sm btn-danger rounded-pill px-4">
+                <i class="fas fa-credit-card me-1"></i> Bayar Sekarang
+            </a>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- 2-Column Responsive Layout for Desktop -->
+<div class="row g-4 mb-4">
+    <!-- Jadwal Hari Ini -->
+    <div class="col-12 col-lg-7">
+        <div class="card border-0 rounded-4 shadow-sm h-100">
+            <div class="card-header bg-white border-0 pt-3 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0"><i class="fas fa-calendar-alt text-primary me-2"></i>Jadwal Belajar Hari Ini (<?= $today_id ?>)</h6>
+                <a href="jadwal.php" class="btn btn-sm btn-light rounded-pill text-primary" style="font-size: 11.5px;">Lihat Semua</a>
+            </div>
+            <div class="card-body">
+                <?php if(empty($jadwal_list)): ?>
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-check fa-3x text-muted mb-3 opacity-50"></i>
+                        <h6 class="fw-semibold text-muted">Tidak ada jadwal untuk hari ini</h6>
+                        <p class="text-muted small mb-0">Selamat beristirahat atau review materi belajar Anda! 🎉</p>
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mata Pelajaran & Kelas</th>
+                                    <th>Waktu & Ruang</th>
+                                    <th>Guru</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($jadwal_list as $j): ?>
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold text-dark"><?= htmlspecialchars($j['mata_pelajaran'] ?? '') ?></div>
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill"><?= htmlspecialchars($j['nama_kelas'] ?? '') ?></span>
+                                        </td>
+                                        <td>
+                                            <div class="small fw-semibold text-dark">
+                                                <i class="far fa-clock text-muted me-1"></i><?= substr($j['jam_mulai'] ?? '00:00', 0, 5) ?> - <?= substr($j['jam_selesai'] ?? '00:00', 0, 5) ?>
+                                            </div>
+                                            <small class="text-muted"><i class="fas fa-door-open text-muted me-1"></i><?= htmlspecialchars($j['ruangan'] ?? '-') ?></small>
+                                        </td>
+                                        <td>
+                                            <span class="small fw-semibold text-secondary"><i class="fas fa-chalkboard-user text-muted me-1"></i><?= htmlspecialchars($j['guru_name'] ?? 'Belum ditentukan') ?></span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
-    <?php endif; ?>
 
-    <?php if(!empty($tagihan_list)): ?>
-    <div class="card border-0 rounded-4 shadow-sm mb-4 bg-danger bg-opacity-10">
-        <div class="card-body p-3">
-            <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-money-bill-wave text-danger fs-5"></i>
-                <div class="flex-grow-1">
-                    <strong class="small">Ada Tagihan Belum Dibayar</strong>
-                    <p class="small text-muted mb-0">Total Rp <?= number_format($total_tagihan, 0, ',', '.') ?></p>
-                </div>
-                <a href="pembayaran.php" class="btn btn-sm btn-danger rounded-pill">Bayar</a>
+    <!-- Kelas Saya -->
+    <div class="col-12 col-lg-5">
+        <div class="card border-0 rounded-4 shadow-sm h-100">
+            <div class="card-header bg-white border-0 pt-3 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0"><i class="fas fa-chalkboard text-primary me-2"></i>Kelas Terdaftar</h6>
+                <a href="pendaftaran.php" class="btn btn-sm btn-light rounded-pill text-primary" style="font-size: 11.5px;">Daftar Kelas</a>
             </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <div class="card border-0 rounded-4 shadow-sm mb-4">
-        <div class="card-header bg-white border-0 pt-3">
-            <h6 class="fw-bold mb-0"><i class="fas fa-calendar-alt text-primary me-2"></i>Jadwal Hari Ini (<?= $today_id ?>)</h6>
-        </div>
-        <div class="card-body">
-            <?php if(empty($jadwal_list)): ?>
-                <div class="text-center py-4">
-                    <i class="fas fa-calendar-times fa-3x text-muted mb-2"></i>
-                    <p class="text-muted small mb-0">Tidak ada jadwal untuk hari ini</p>
-                    <p class="text-muted small">Selamat beristirahat! 🎉</p>
-                </div>
-            <?php else: ?>
-                <?php foreach($jadwal_list as $j): ?>
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                        <div>
-                            <strong><?= htmlspecialchars($j['mata_pelajaran']) ?></strong>
-                            <div class="small text-muted">
-                                <?= substr($j['jam_mulai'], 0, 5) ?> - <?= substr($j['jam_selesai'], 0, 5) ?> | 
-                                Guru: <?= htmlspecialchars($j['guru_name']) ?>
+            <div class="card-body">
+                <?php if(empty($kelas_list)): ?>
+                    <div class="text-center py-5">
+                        <i class="fas fa-book-open fa-3x text-muted mb-3 opacity-50"></i>
+                        <h6 class="fw-semibold text-muted">Belum ada kelas yang diikuti</h6>
+                        <p class="text-muted small mb-3">Pilih dan daftar kelas bimbel favorit Anda sekarang.</p>
+                        <a href="pendaftaran.php" class="btn btn-sm btn-primary rounded-pill px-3">Daftar Kelas Sekarang</a>
+                    </div>
+                <?php else: ?>
+                    <div class="d-flex flex-column gap-2">
+                        <?php foreach($kelas_list as $k): ?>
+                            <div class="p-3 rounded-3 border bg-light d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="d-block text-dark"><?= htmlspecialchars($k['mata_pelajaran'] ?? '') ?></strong>
+                                    <small class="text-muted"><?= htmlspecialchars($k['nama_kelas'] ?? '') ?></small>
+                                </div>
+                                <span class="badge <?= ($k['status_bayar'] ?? '') == 'valid' ? 'bg-success' : 'bg-warning text-dark' ?> rounded-pill">
+                                    <i class="fas <?= ($k['status_bayar'] ?? '') == 'valid' ? 'fa-check-circle' : 'fa-hourglass-half' ?> me-1"></i>
+                                    <?= ($k['status_bayar'] ?? '') == 'valid' ? 'Lunas' : 'Belum Bayar' ?>
+                                </span>
                             </div>
-                            <div class="small text-muted">Ruang: <?= $j['ruangan'] ?? '-' ?></div>
-                        </div>
-                        <span class="badge bg-primary rounded-pill"><?= htmlspecialchars($j['nama_kelas']) ?></span>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="card border-0 rounded-4 shadow-sm mb-5">
-        <div class="card-header bg-white border-0 pt-3">
-            <h6 class="fw-bold mb-0"><i class="fas fa-chalkboard text-primary me-2"></i>Kelas Saya</h6>
-        </div>
-        <div class="card-body">
-            <?php if(empty($kelas_list)): ?>
-                <div class="text-center py-4">
-                    <i class="fas fa-book-open fa-3x text-muted mb-2"></i>
-                    <p class="text-muted small mb-0">Belum ada kelas yang diikuti</p>
-                    <a href="pendaftaran.php" class="btn btn-sm btn-primary rounded-pill mt-2">Daftar Kelas Sekarang</a>
-                </div>
-            <?php else: ?>
-                <?php foreach($kelas_list as $k): ?>
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                        <div>
-                            <strong><?= htmlspecialchars($k['mata_pelajaran']) ?></strong>
-                            <div class="small text-muted"><?= htmlspecialchars($k['nama_kelas']) ?></div>
-                        </div>
-                        <span class="badge <?= $k['status_bayar'] == 'valid' ? 'bg-success' : 'bg-warning' ?> rounded-pill">
-                            <?= $k['status_bayar'] == 'valid' ? 'Lunas' : 'Belum Bayar' ?>
-                        </span>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-    </div>
-
-</div> <?php 
-// File ini berisi bottom menu navigasi kamu. 
-// Aturan CSS di atas otomatis mendeteksi elemen di dalam sini dan menempelkannya secara permanen di bawah frame HP.
+<?php 
 require_once '../layout/footer.php'; 
 ?>

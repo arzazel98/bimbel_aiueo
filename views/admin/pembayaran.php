@@ -93,46 +93,67 @@ require_once '../layout/header.php';
         <i class="fas fa-info-circle"></i> Ada <strong><?= count($data_pembayaran) ?></strong> pembayaran yang menunggu verifikasi.
     </div>
     
+    <div class="row g-3 mb-4">
     <?php foreach($data_pembayaran as $p): ?>
-    <div class="card border-0 rounded-4 shadow-sm mb-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
+    <div class="col-12 col-lg-6">
+        <div class="card border-0 rounded-4 shadow-sm h-100">
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
                 <div>
-                    <h6 class="fw-bold mb-1"><?= htmlspecialchars($p['siswa_nama']) ?></h6>
-                    <div class="small text-muted">@<?= htmlspecialchars($p['username']) ?></div>
-                    <div class="small text-muted mt-1">Kelas: <?= htmlspecialchars($p['nama_kelas']) ?> (<?= $p['mata_pelajaran'] ?>)</div>
-                    <div class="small text-muted">Jumlah: Rp <?= number_format($p['jumlah'], 0, ',', '.') ?></div>
-                    <div class="small text-muted">Metode: <?= $p['metode_pembayaran'] ?></div>
-                    <div class="small text-muted mt-1">
-                        Status Pendaftaran Saat Ini: 
-                        <span class="badge <?= $p['status_pendaftaran'] == 'pending' ? 'bg-warning' : 'bg-success' ?>">
-                            <?= $p['status_pendaftaran'] == 'pending' ? 'Menunggu' : 'Aktif' ?>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark"><?= htmlspecialchars($p['siswa_nama']) ?></h6>
+                            <span class="badge bg-light text-muted border">@<?= htmlspecialchars($p['username']) ?></span>
+                        </div>
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2">
+                            <i class="fas fa-hourglass-half me-1"></i> Menunggu Verifikasi
                         </span>
                     </div>
+
+                    <div class="p-3 bg-light rounded-3 mb-3">
+                        <div class="row g-2 small">
+                            <div class="col-6">
+                                <span class="text-muted d-block">Kelas & Mapel:</span>
+                                <strong><?= htmlspecialchars($p['nama_kelas']) ?></strong> (<?= $p['mata_pelajaran'] ?>)
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted d-block">Total Transfer:</span>
+                                <strong class="text-success fs-6">Rp <?= number_format($p['jumlah'], 0, ',', '.') ?></strong>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted d-block">Metode:</span>
+                                <span class="text-uppercase fw-semibold"><?= $p['metode_pembayaran'] ?></span>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted d-block">Status Akun:</span>
+                                <span class="badge <?= $p['status_pendaftaran'] == 'pending' ? 'bg-warning text-dark' : 'bg-success' ?> rounded-pill">
+                                    <?= $p['status_pendaftaran'] == 'pending' ? 'Pending Approval' : 'Aktif' ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-end">
-                    <span class="badge bg-warning rounded-pill">Menunggu Verifikasi</span>
+
+                <div class="d-flex gap-2 pt-2 border-top">
+                    <form method="POST" class="flex-grow-1">
+                        <input type="hidden" name="action" value="validasi">
+                        <input type="hidden" name="id" value="<?= $p['id'] ?>">
+                        <button type="submit" class="btn btn-success rounded-pill w-100 py-2" onclick="return confirm('Validasi pembayaran ini? Siswa akan langsung aktif.')">
+                            <i class="fas fa-check-circle me-1"></i> Setujui & Validasi
+                        </button>
+                    </form>
+                    <form method="POST" class="flex-grow-1">
+                        <input type="hidden" name="action" value="tolak">
+                        <input type="hidden" name="id" value="<?= $p['id'] ?>">
+                        <button type="submit" class="btn btn-outline-danger rounded-pill w-100 py-2" onclick="return confirm('Tolak pembayaran ini?')">
+                            <i class="fas fa-times-circle me-1"></i> Tolak
+                        </button>
+                    </form>
                 </div>
-            </div>
-            <div class="d-flex gap-2 mt-3">
-                <form method="POST" class="flex-grow-1">
-                    <input type="hidden" name="action" value="validasi">
-                    <input type="hidden" name="id" value="<?= $p['id'] ?>">
-                    <button type="submit" class="btn btn-success rounded-pill w-100" onclick="return confirm('Validasi pembayaran ini? Siswa akan langsung aktif.')">
-                        <i class="fas fa-check-circle"></i> Validasi Pembayaran
-                    </button>
-                </form>
-                <form method="POST" class="flex-grow-1">
-                    <input type="hidden" name="action" value="tolak">
-                    <input type="hidden" name="id" value="<?= $p['id'] ?>">
-                    <button type="submit" class="btn btn-danger rounded-pill w-100" onclick="return confirm('Tolak pembayaran ini?')">
-                        <i class="fas fa-times-circle"></i> Tolak
-                    </button>
-                </form>
             </div>
         </div>
     </div>
     <?php endforeach; ?>
+    </div>
 <?php endif; ?>
 
 <?php require_once '../layout/footer.php'; ?>

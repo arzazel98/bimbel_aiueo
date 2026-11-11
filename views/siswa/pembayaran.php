@@ -109,9 +109,9 @@ require_once '../layout/header.php';
             <?php foreach($tagihan_list as $index => $t): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 <?= $index < count($tagihan_list)-1 ? 'border-bottom' : '' ?>">
                     <div>
-                        <strong><?= htmlspecialchars($t['mata_pelajaran']) ?></strong>
-                        <div class="small text-muted"><?= htmlspecialchars($t['nama_kelas']) ?></div>
-                        <div class="small fw-bold text-danger mt-1">Rp <?= number_format($t['harga_per_bulan'], 0, ',', '.') ?></div>
+                        <strong><?= htmlspecialchars($t['mata_pelajaran'] ?? '') ?></strong>
+                        <div class="small text-muted"><?= htmlspecialchars($t['nama_kelas'] ?? '') ?></div>
+                        <div class="small fw-bold text-danger mt-1">Rp <?= number_format($t['harga_per_bulan'] ?? 0, 0, ',', '.') ?></div>
                     </div>
                     <button class="btn btn-primary rounded-pill btn-sm" data-bs-toggle="modal" data-bs-target="#bayarModal<?= $t['id'] ?>">
                         <i class="fas fa-credit-card"></i> Bayar Sekarang
@@ -130,13 +130,13 @@ require_once '../layout/header.php';
                                 </div>
                                 <div class="modal-body">
                                     <div class="bg-light rounded-3 p-3 mb-3">
-                                        <p class="small mb-1">Kelas: <strong><?= htmlspecialchars($t['mata_pelajaran']) ?></strong></p>
-                                        <p class="small mb-1">Tagihan: <strong class="text-danger">Rp <?= number_format($t['harga_per_bulan'], 0, ',', '.') ?></strong></p>
+                                        <p class="small mb-1">Kelas: <strong><?= htmlspecialchars($t['mata_pelajaran'] ?? '') ?></strong></p>
+                                        <p class="small mb-1">Tagihan: <strong class="text-danger">Rp <?= number_format($t['harga_per_bulan'] ?? 0, 0, ',', '.') ?></strong></p>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label small fw-bold">Jumlah Bayar</label>
-                                        <input type="number" name="jumlah" class="form-control rounded-3" value="<?= $t['harga_per_bulan'] ?>" required>
-                                        <small class="text-muted">Minimal Rp <?= number_format($t['harga_per_bulan'], 0, ',', '.') ?></small>
+                                        <input type="number" name="jumlah" class="form-control rounded-3" value="<?= $t['harga_per_bulan'] ?? 0 ?>" required>
+                                        <small class="text-muted">Minimal Rp <?= number_format($t['harga_per_bulan'] ?? 0, 0, ',', '.') ?></small>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label small fw-bold">Metode Pembayaran</label>
@@ -178,13 +178,13 @@ require_once '../layout/header.php';
             <?php foreach($riwayat_list as $r): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                     <div>
-                        <strong><?= htmlspecialchars($r['mata_pelajaran']) ?></strong>
-                        <div class="small text-muted"><?= date('d M Y', strtotime($r['tanggal_bayar'])) ?> | <?= $r['metode_pembayaran'] ?></div>
+                        <strong><?= htmlspecialchars($r['mata_pelajaran'] ?? '') ?></strong>
+                        <div class="small text-muted"><?= !empty($r['tanggal_bayar']) ? date('d M Y', strtotime($r['tanggal_bayar'])) : '-' ?> | <?= htmlspecialchars($r['metode_pembayaran'] ?? 'transfer') ?></div>
                     </div>
                     <div class="text-end">
-                        <div class="small fw-bold">Rp <?= number_format($r['jumlah'], 0, ',', '.') ?></div>
-                        <span class="badge <?= $r['status'] == 'valid' ? 'bg-success' : ($r['status'] == 'pending' ? 'bg-warning' : 'bg-danger') ?> rounded-pill">
-                            <?= $r['status'] == 'valid' ? '✓ Lunas' : ($r['status'] == 'pending' ? '⏳ Pending' : '✗ Ditolak') ?>
+                        <div class="small fw-bold">Rp <?= number_format($r['jumlah'] ?? 0, 0, ',', '.') ?></div>
+                        <span class="badge <?= ($r['status'] ?? '') == 'valid' ? 'bg-success' : (($r['status'] ?? '') == 'pending' ? 'bg-warning' : 'bg-danger') ?> rounded-pill">
+                            <?= ($r['status'] ?? '') == 'valid' ? '✓ Lunas' : (($r['status'] ?? '') == 'pending' ? '⏳ Pending' : '✗ Ditolak') ?>
                         </span>
                     </div>
                 </div>

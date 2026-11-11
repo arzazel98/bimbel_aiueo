@@ -90,34 +90,42 @@ require_once '../layout/header.php';
     </div>
 <?php endif; ?>
 
+<div class="row g-3 mb-4">
 <?php foreach($kelas as $k): ?>
-<div class="card border-0 rounded-4 shadow-sm mb-3">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start">
+<div class="col-12 col-md-6 col-xl-4">
+    <div class="card border-0 rounded-4 shadow-sm h-100">
+        <div class="card-body d-flex flex-column justify-content-between p-3">
             <div>
-                <h6 class="fw-bold mb-1"><?= htmlspecialchars($k['nama_kelas']) ?></h6>
-                <small class="text-muted"><?= htmlspecialchars($k['mata_pelajaran']) ?></small>
-                <div class="mt-2">
-                    <span class="badge bg-primary rounded-pill">Kuota: <?= $k['terdaftar'] ?>/<?= $k['kuota'] ?></span>
-                    <span class="badge bg-success rounded-pill">Rp <?= number_format($k['harga_per_bulan'], 0, ',', '.') ?></span>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark"><?= htmlspecialchars($k['nama_kelas']) ?></h6>
+                        <span class="badge bg-secondary-subtle text-secondary rounded-pill"><?= htmlspecialchars($k['mata_pelajaran']) ?></span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light rounded-circle" data-bs-toggle="dropdown" aria-label="Aksi">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3">
+                            <li><a class="dropdown-item small" href="#" onclick="editKelas(<?= htmlspecialchars(json_encode($k)) ?>)"><i class="fas fa-edit me-2 text-primary"></i> Edit</a></li>
+                            <li><a class="dropdown-item small" href="#" data-bs-toggle="modal" data-bs-target="#assignGuruModal" onclick="setKelasId(<?= $k['id'] ?>)"><i class="fas fa-user-plus me-2 text-success"></i> Assign Guru</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item small text-danger" href="#" onclick="deleteKelas(<?= $k['id'] ?>)"><i class="fas fa-trash me-2"></i> Hapus</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <p class="small text-muted mt-2 mb-0"><?= htmlspecialchars($k['deskripsi']) ?></p>
+                <p class="small text-muted mb-3"><?= htmlspecialchars($k['deskripsi'] ?: 'Tidak ada deskripsi.') ?></p>
             </div>
-            <div class="dropdown">
-                <button class="btn btn-sm btn-light rounded-circle" data-bs-toggle="dropdown">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="editKelas(<?= htmlspecialchars(json_encode($k)) ?>)"><i class="fas fa-edit"></i> Edit</a></li>
-                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#assignGuruModal" onclick="setKelasId(<?= $k['id'] ?>)"><i class="fas fa-user-plus"></i> Assign Guru</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteKelas(<?= $k['id'] ?>)"><i class="fas fa-trash"></i> Hapus</a></li>
-                </ul>
+            <div class="pt-2 border-top d-flex justify-content-between align-items-center">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
+                    <i class="fas fa-users me-1"></i> <?= $k['terdaftar'] ?> / <?= $k['kuota'] ?> Siswa
+                </span>
+                <strong class="text-success small">Rp <?= number_format($k['harga_per_bulan'], 0, ',', '.') ?><span class="text-muted fw-normal" style="font-size: 11px;">/bln</span></strong>
             </div>
         </div>
     </div>
 </div>
 <?php endforeach; ?>
+</div>
 
 <!-- Modal Add Kelas -->
 <div class="modal fade" id="addKelasModal" tabindex="-1">

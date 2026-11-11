@@ -7,13 +7,18 @@ checkRole(['siswa']);
 $db = getDB();
 $user_id = $_SESSION['user_id'];
 
-// Ambil hari dari GET, default ke hari ini
-$hari_selected = isset($_GET['hari']) ? $_GET['hari'] : date('l');
-$hari_map = [
-    'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu',
-    'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu', 'Sunday' => 'Minggu'
-];
-$hari_id = isset($hari_map[$hari_selected]) ? $hari_map[$hari_selected] : 'Senin';
+// Ambil hari dari GET atau default hari ini
+$hari_list_all = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+$hari_param = $_GET['hari'] ?? '';
+if (in_array($hari_param, $hari_list_all)) {
+    $hari_id = $hari_param;
+} else {
+    $hari_map = [
+        'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu',
+        'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu', 'Sunday' => 'Minggu'
+    ];
+    $hari_id = $hari_map[date('l')] ?? 'Senin';
+}
 
 // Ambil semua kelas yang SUDAH DISETUJUI oleh admin
 $kelas_disetujui = $db->prepare("SELECT kelas_id FROM pendaftaran WHERE siswa_id = :siswa_id AND status_pendaftaran = 'disetujui'");
@@ -27,8 +32,8 @@ if (!empty($approved_ids)) {
     $sql = "SELECT j.*, k.nama_kelas, k.mata_pelajaran, u.nama_lengkap as guru_name
             FROM jadwal j 
             JOIN kelas k ON j.kelas_id = k.id 
-            JOIN guru_kelas gk ON gk.kelas_id = k.id
-            JOIN users u ON u.id = gk.guru_id
+            LEFT JOIN guru_kelas gk ON gk.kelas_id = k.id
+            LEFT JOIN users u ON u.id = gk.guru_id
             WHERE j.hari = ? AND j.kelas_id IN ($placeholders)
             ORDER BY j.jam_mulai";
     $stmt = $db->prepare($sql);
@@ -40,7 +45,8 @@ if (!empty($approved_ids)) {
 // Get pending registrations count
 $pending = $db->prepare("SELECT COUNT(*) as total FROM pendaftaran WHERE siswa_id = :siswa_id AND status_pendaftaran = 'pending'");
 $pending->execute(['siswa_id' => $user_id]);
-$pending_count = $pending->fetch(PDO::FETCH_ASSOC)['total'];
+$pending_res = $pending->fetch(PDO::FETCH_ASSOC);
+$pending_count = (int)($pending_res['total'] ?? 0);
 
 require_once '../layout/header.php';
 ?>
@@ -106,19 +112,37 @@ require_once '../layout/header.php';
                 <?php endif; ?>
             </div>
         <?php else: ?>
-            <?php foreach($jadwal_list as $j): ?>
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <div>
-                        <strong><?= htmlspecialchars($j['mata_pelajaran']) ?></strong>
-                        <div class="small text-muted">
-                            <?= substr($j['jam_mulai'], 0, 5) ?> - <?= substr($j['jam_selesai'], 0, 5) ?>
-                        </div>
-                        <div class="small text-muted">Guru: <?= htmlspecialchars($j['guru_name']) ?></div>
-                        <div class="small text-muted">Ruang: <?= $j['ruangan'] ?? '-' ?></div>
-                    </div>
-                    <span class="badge bg-primary rounded-pill"><?= htmlspecialchars($j['nama_kelas']) ?></span>
-                </div>
-            <?php endforeach; ?>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Kelas & Mata Pelajaran</th>
+                            <th>Waktu Belajar</th>
+                            <th>Guru Pengajar</th>
+                            <th>Ruangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($jadwal_list as $j): ?>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark"><?= htmlspecialchars($j['mata_pelajaran'] ?? '') ?></div>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill"><?= htmlspecialchars($j['nama_kelas'] ?? '') ?></span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark"><i class="far fa-clock text-muted me-1"></i><?= substr($j['jam_mulai'] ?? '00:00', 0, 5) ?> - <?= substr($j['jam_selesai'] ?? '00:00', 0, 5) ?></div>
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-secondary"><i class="fas fa-chalkboard-user text-muted me-1"></i><?= htmlspecialchars($j['guru_name'] ?? 'Belum ditentukan') ?></span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border"><i class="fas fa-door-open text-muted me-1"></i><?= htmlspecialchars($j['ruangan'] ?? '-') ?></span>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         <?php endif; ?>
     </div>
 </div>
